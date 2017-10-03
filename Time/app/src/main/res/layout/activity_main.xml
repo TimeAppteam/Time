@@ -57,9 +57,6 @@
             style="@style/tab_menu_item"
             android:drawableTop="@drawable/tab_menu_warn"
             android:text="@string/tab_menu_pay" />
-
-
-
     </RadioGroup>
 
     <View
@@ -68,13 +65,19 @@
         android:layout_height="2px"
         android:layout_above="@id/rg_tab_bar"
         android:background="@color/div_white" />
-
+    <FrameLayout
+        android:id="@+id/window__content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/div_tab_bar"
+        android:layout_below="@id/ly_top_bar"></FrameLayout>
     <FrameLayout
         android:id="@+id/ly_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/div_tab_bar"
         android:layout_below="@id/ly_top_bar"></FrameLayout>
+
 
 
 </RelativeLayout>

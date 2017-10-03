@@ -3,6 +3,7 @@ package com.time.time;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -10,20 +11,30 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 
 /**
  * Created by Coder-pig on 2015/8/29 0028.
  */
-public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener{
+public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener  {
     private static final String TAG = "MainActivity";
     private RadioGroup rg_tab_bar;
     private RadioButton rb_channel;
 
     //Fragment Object
-    private Fragment fg1,fg2,fg3;
+    private Fragment fg1, fg2, fg3;
     private FragmentManager fManager;
 
     @Override
@@ -37,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rb_channel = (RadioButton) findViewById(R.id.rb_warn);
         rb_channel.setChecked(true);
         anyMethod();
+
     }
 
 
@@ -44,28 +56,28 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         FragmentTransaction fTransaction = fManager.beginTransaction();
         hideAllFragment(fTransaction);
-        switch (checkedId){
+        switch (checkedId) {
             case R.id.rb_warn:
-                if(fg1 == null){
-                    fg1 = new warnFragment();
-                    fTransaction.add(R.id.ly_content,fg1);
-                }else{
+                if (fg1 == null) {
+                    fg1 = new superviseFragment();
+                    fTransaction.add(R.id.ly_content, fg1);
+                } else {
                     fTransaction.show(fg1);
                 }
                 break;
             case R.id.rb_count:
-                if(fg2 == null){
+                if (fg2 == null) {
                     fg2 = new countFragment();
-                    fTransaction.add(R.id.ly_content,fg2);
-                }else{
+                    fTransaction.add(R.id.ly_content, fg2);
+                } else {
                     fTransaction.show(fg2);
                 }
                 break;
             case R.id.rb_my:
-                if(fg3 == null){
+                if (fg3 == null) {
                     fg3 = new myFragment();
-                    fTransaction.add(R.id.ly_content,fg3);
-                }else{
+                    fTransaction.add(R.id.ly_content, fg3);
+                } else {
                     fTransaction.show(fg3);
                 }
                 break;
@@ -74,10 +86,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
 
     //隐藏所有Fragment
-    private void hideAllFragment(FragmentTransaction fragmentTransaction){
-        if(fg1 != null)fragmentTransaction.hide(fg1);
-        if(fg2 != null)fragmentTransaction.hide(fg2);
-        if(fg3 != null)fragmentTransaction.hide(fg3);
+    private void hideAllFragment(FragmentTransaction fragmentTransaction) {
+        if (fg1 != null) fragmentTransaction.hide(fg1);
+        if (fg2 != null) fragmentTransaction.hide(fg2);
+        if (fg3 != null) fragmentTransaction.hide(fg3);
 
     }
 
@@ -107,9 +119,19 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         if (!isAccessibilitySettingsOn(this)) {
             // 引导至辅助功能设置页面
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+
         } else {
             // 执行辅助功能服务相关操作
         }
     }
 
-}
+
+
+
+    }
+
+
+
+
+
+
