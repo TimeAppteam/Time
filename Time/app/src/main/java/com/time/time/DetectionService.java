@@ -2,11 +2,15 @@ package com.time.time;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 
@@ -21,13 +25,34 @@ public class DetectionService extends AccessibilityService {
     static String foregroundPackageName;
     String firstName="com.android.launcher3";
     String secondName;
-    //List<appHistory> apphistory;
+    ScreenStatusReceiver mScreenStatusReceiver;
+    Cursor cursor;
+
+    MyDatabaseHelper dbHelper;
+    SQLiteDatabase db;
+
+    SimpleDateFormat sDateFormat;
+    String    date;
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: 666");
+
         return Service.START_STICKY; // 根据需要返回不同的语义值
     }
 
+    @Override
+    public void onCreate() {
+       // Log.d(TAG, "onStartCommand: 666");
+        dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
+        db=dbHelper.getWritableDatabase();
+
+        sDateFormat= new SimpleDateFormat("yyyyMMdd");
+        date = sDateFormat.format(new    java.util.Date());
+        registSreenStatusReceiver();
+        db.execSQL("create table if not exists  time"+date+"(appName text,useFrequency text,useTime text)");
+        db.execSQL("create table if not exists fre"+date+"(wakeFrequency text,totalUseTime text)");
+    }
 
     /**
      * 重载辅助功能事件回调函数，对窗口状态变化事件进行处理
@@ -49,24 +74,16 @@ public class DetectionService extends AccessibilityService {
             // secondName = new ComponentName(event.getPackageName().toString(),
             //        event.getClassName().toString());
 
-            SimpleDateFormat sDateFormat    =   new SimpleDateFormat("yyyyMMdd");
-            String    date    =    sDateFormat.format(new    java.util.Date());
-            Log.d(TAG, "time"+date);
-            MyDatabaseHelper dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
-            SQLiteDatabase db=dbHelper.getWritableDatabase();
+
             //db.execSQL("create table time"+date+"(name text)");
             secondName=event.getPackageName().toString();
 
-            //appHistory app=new appHistory();
-
-
             endTime=System.currentTimeMillis();
-            Cursor cursor;
 
-            db.execSQL("create table if not exists  time"+date+"(appName text,useFrequency text,useTime text)");
             try {
                 //Cursor c = db.select("appName","useFrequency","useTime").where("appName=?" , firstName).find(appHistory.class);
                 cursor=db.rawQuery("select * from time"+date+" where appName=?",new String[]{firstName});
+
             }catch (Exception e){
                 throw  e;
             }
@@ -93,5 +110,64 @@ public class DetectionService extends AccessibilityService {
     @Override
     protected  void onServiceConnected() {
         super.onServiceConnected();
+    }
+
+    private void registSreenStatusReceiver() {
+        mScreenStatusReceiver = new ScreenStatusReceiver();
+        IntentFilter screenStatusIF = new IntentFilter();
+        screenStatusIF.addAction(Intent.ACTION_SCREEN_ON);
+        screenStatusIF.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(mScreenStatusReceiver, screenStatusIF);
+    }
+
+    private String writeFre(){
+        Cursor cursor1;
+        String wakefrequency="0";
+        cursor1=db.rawQuery("select * from fre"+date,null);
+        if(!cursor1.moveToFirst()){
+            db.execSQL("insert into fre"+date+"(wakeFrequency,totalUseTime) values(?,?)",new String[]{"0","0"});
+        }
+        else{
+            wakefrequency=String.valueOf(Integer.valueOf(cursor1.getString(cursor1.getColumnIndex("wakeFrequency")))+1);
+            String usetime=cursor1.getString(cursor1.getColumnIndex("totalUseTime"));
+
+            db.execSQL("update fre"+date+" set wakeFrequency=?,totalUseTime=?",new String[]{wakefrequency,usetime});
+        }
+        return wakefrequency;
+    }
+    private String writeTime(){
+        Cursor cursor2;
+        long time=0;
+        String stime="0";
+
+        cursor2=db.rawQuery("select * from time"+date,null);
+        if(!cursor2.moveToFirst()){
+
+        }
+        else{
+            
+            do{
+                time+=Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime")));
+            }while(cursor2.moveToNext());
+            stime=String.valueOf(time);
+            db.execSQL("update fre"+date+" set totalUseTime=?",new String[]{stime});
+        }
+    return stime;
+    }
+
+    class ScreenStatusReceiver extends BroadcastReceiver {
+        String SCREEN_ON = "android.intent.action.SCREEN_ON";
+        String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (SCREEN_ON.equals(intent.getAction())) {
+                writeFre();
+            }
+            else if (SCREEN_OFF.equals(intent.getAction())) {
+                writeTime();
+
+            }
+        }
     }
 }
