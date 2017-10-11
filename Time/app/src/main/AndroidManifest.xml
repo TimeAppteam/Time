@@ -18,7 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NoteEdit">
 
+        </activity>
         <service
             android:name=".DetectionService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -45,5 +47,6 @@
             android:enabled="true"
             android:exported="true"></service>
     </application>
+
 
 </manifest>
