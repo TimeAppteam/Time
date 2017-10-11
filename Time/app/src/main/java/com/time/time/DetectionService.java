@@ -1,6 +1,8 @@
 package com.time.time;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,9 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
+
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
+
 
 import java.text.SimpleDateFormat;
 
@@ -34,6 +38,8 @@ public class DetectionService extends AccessibilityService {
     SimpleDateFormat sDateFormat;
     String    date;
 
+    Notification notification;
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -44,6 +50,7 @@ public class DetectionService extends AccessibilityService {
     @Override
     public void onCreate() {
        // Log.d(TAG, "onStartCommand: 666");
+        super.onCreate();
         dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
         db=dbHelper.getWritableDatabase();
 
@@ -52,6 +59,32 @@ public class DetectionService extends AccessibilityService {
         registSreenStatusReceiver();
         db.execSQL("create table if not exists  time"+date+"(appName text,useFrequency text,useTime text)");
         db.execSQL("create table if not exists fre"+date+"(wakeFrequency text,totalUseTime text)");
+
+        //在前台通知中显示当天唤醒次数和使用总时间
+        Cursor cursor5=db.rawQuery("select * from fre"+date,null);
+        String fre="0";
+        String time="0";
+        //任何一次查询数据库得到的cursor，必须先判是否为空
+        if(cursor5.moveToFirst()){
+            fre=cursor5.getString(cursor5.getColumnIndex("wakeFrequency"));
+            time=String.valueOf(Long.valueOf(cursor5.getString(cursor5.getColumnIndex("totalUseTime")))/60);
+        }
+        else{}
+        //当用户点通知时，进入mainactivity
+        Intent intent = new Intent(this,MainActivity.class);
+        PendingIntent pi=PendingIntent.getActivity(this,0,intent,0);
+        notification=new NotificationCompat.Builder(this)
+                .setContentTitle("我的一天")
+                .setContentText("解锁"+fre+"次,使用"+time+"分钟")
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        R.mipmap.ic_launcher))
+                .setContentIntent(pi)
+                .build();
+
+        startForeground(1,notification);
+
     }
 
     /**
@@ -120,6 +153,7 @@ public class DetectionService extends AccessibilityService {
         registerReceiver(mScreenStatusReceiver, screenStatusIF);
     }
 
+    //唤醒屏幕时，wakeFrequency+1
     private String writeFre(){
         Cursor cursor1;
         String wakefrequency="0";
@@ -135,26 +169,52 @@ public class DetectionService extends AccessibilityService {
         }
         return wakefrequency;
     }
+
+    //锁屏时，统计当天使用总时间
     private String writeTime(){
         Cursor cursor2;
         long time=0;
         String stime="0";
 
         cursor2=db.rawQuery("select * from time"+date,null);
-        if(!cursor2.moveToFirst()){
-
-        }
-        else{
-            
+        if(cursor2.moveToFirst()){
             do{
                 time+=Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime")));
             }while(cursor2.moveToNext());
             stime=String.valueOf(time);
             db.execSQL("update fre"+date+" set totalUseTime=?",new String[]{stime});
         }
+        else{
+        }
     return stime;
     }
 
+    //每次唤醒屏幕时，跟新通知
+    private void renewNotification(){
+        Cursor cursor5=db.rawQuery("select * from fre"+date,null);
+        String fre="0";
+        String time="0";
+        if(cursor5.moveToFirst()){
+            fre=cursor5.getString(cursor5.getColumnIndex("wakeFrequency"));
+            time=String.valueOf(Long.valueOf(cursor5.getString(cursor5.getColumnIndex("totalUseTime")))/60);
+        }
+        else{}
+
+        Intent intent = new Intent(this,MainActivity.class);
+        PendingIntent pi=PendingIntent.getActivity(this,0,intent,0);
+        Notification notification=new NotificationCompat.Builder(this)
+                .setContentTitle("我的一天")
+                .setContentText("解锁"+fre+"次,使用"+time+"分钟")
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        R.mipmap.ic_launcher))
+                .setContentIntent(pi)
+                .build();
+        startForeground(1,notification);
+    }
+
+    //收到唤醒屏幕，锁屏的广播
     class ScreenStatusReceiver extends BroadcastReceiver {
         String SCREEN_ON = "android.intent.action.SCREEN_ON";
         String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
@@ -163,6 +223,7 @@ public class DetectionService extends AccessibilityService {
         public void onReceive(Context context, Intent intent) {
             if (SCREEN_ON.equals(intent.getAction())) {
                 writeFre();
+                renewNotification();
             }
             else if (SCREEN_OFF.equals(intent.getAction())) {
                 writeTime();
