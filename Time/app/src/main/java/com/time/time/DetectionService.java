@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Jerry on 2017/9/22.
  */
-//测试github
+
 public class DetectionService extends AccessibilityService {
     final static String TAG = "detectionservice";
     long startTime=System.currentTimeMillis(),endTime;
@@ -145,7 +145,7 @@ public class DetectionService extends AccessibilityService {
 
         }
         else{
-
+            
             do{
                 time+=Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime")));
             }while(cursor2.moveToNext());
