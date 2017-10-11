@@ -145,7 +145,7 @@ public class DetectionService extends AccessibilityService {
 
         }
         else{
-
+            
             do{
                 time+=Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime")));
             }while(cursor2.moveToNext());
