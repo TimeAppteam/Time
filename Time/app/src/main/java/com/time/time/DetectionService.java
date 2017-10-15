@@ -49,7 +49,7 @@ public class DetectionService extends AccessibilityService {
 
     @Override
     public void onCreate() {
-       // Log.d(TAG, "onStartCommand: 666");
+        // Log.d(TAG, "onStartCommand: 666");
         super.onCreate();
         dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
         db=dbHelper.getWritableDatabase();
@@ -186,7 +186,7 @@ public class DetectionService extends AccessibilityService {
         }
         else{
         }
-    return stime;
+        return stime;
     }
 
     //每次唤醒屏幕时，跟新通知
