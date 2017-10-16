@@ -39,6 +39,7 @@ public class appAdapter extends ArrayAdapter {
         ImageView appicon=(ImageView)view.findViewById(R.id.app_icon);
         TextView appname=(TextView)view.findViewById(R.id.app_name);
         TextView apptime=(TextView)view.findViewById(R.id.app_time);
+        TextView appfre=(TextView)view.findViewById(R.id.app_fre);
 
     //通过包名获得appicon
         try {
@@ -52,7 +53,7 @@ public class appAdapter extends ArrayAdapter {
 
         appname.setText(appinfo.getAppName());
         apptime.setText(appinfo.getUseTime());//此为秒单位，还要换算成分钟
-
+        appfre.setText(appinfo.getUseFrequency());
         return view;
     }
 }

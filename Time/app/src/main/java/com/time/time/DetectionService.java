@@ -117,7 +117,7 @@ public class DetectionService extends AccessibilityService {
             }
 
             if(!cursor.moveToFirst()){
-                db.execSQL("insert into time"+date+"(appName,useFrequency,useTime) values(?,?,?)",new String[]{firstName,"1","0"});
+                db.execSQL("insert into time"+date+"(appName,useFrequency,useTime) values(?,?,?)",new String[]{firstName,"0","0"});
             }
             else if(!firstName.equals(secondName)){
                 String usefrequency=String.valueOf(Integer.valueOf(cursor.getString(cursor.getColumnIndex("useFrequency")))+1);
@@ -200,8 +200,8 @@ public class DetectionService extends AccessibilityService {
         Notification notification=new NotificationCompat.Builder(this)
                 .setContentTitle("我的一天")
                 .setContentText("解锁"+fre+"次,使用"+time+"分钟")
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
+
+
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
                         R.mipmap.ic_launcher))
                 .setContentIntent(pi)
