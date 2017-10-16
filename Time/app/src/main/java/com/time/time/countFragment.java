@@ -41,7 +41,7 @@ public class countFragment extends Fragment {
         SQLiteDatabase db=dbHelper.getWritableDatabase();
         Cursor cursor;
         cursor=db.rawQuery("select * from time"+date,null);
-
+//在
         if(cursor.moveToFirst()){
             do{
                 String packagename=cursor.getString(cursor.getColumnIndex("appName"));
@@ -51,7 +51,7 @@ public class countFragment extends Fragment {
                 PackageManager pm=getContext().getPackageManager();
                 try {
                      ai = new appInfomation(pm.getApplicationLabel(pm.getApplicationInfo(packagename, PackageManager.GET_META_DATA)).toString()
-                            , usetime, usefrequency, 1);
+                            , usetime, usefrequency, packagename);
                     appinfolist.add(ai);
                 }catch  (PackageManager.NameNotFoundException e) {
                 }

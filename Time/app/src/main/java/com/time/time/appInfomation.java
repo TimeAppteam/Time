@@ -5,16 +5,16 @@ package com.time.time;
  */
 
 public class appInfomation {
-    private String appName;
+    private String appName;//注意，应用名和包名不同
     private String useTime;
     private String useFrequency;
-    private int appIcon;
+    private String packagename;//这是包名
 
-    public appInfomation(String appName, String useTime, String useFrequency, int appIcon) {
+    public appInfomation(String appName, String useTime, String useFrequency, String packagename) {
         this.appName = appName;
         this.useTime = useTime;
         this.useFrequency = useFrequency;
-        this.appIcon = appIcon;
+        this.packagename=packagename;
     }
 
     public String getAppName() {
@@ -29,9 +29,7 @@ public class appInfomation {
         return useFrequency;
     }
 
-    public int getAppIcon() {
-        return appIcon;
-    }
+    public String getPackagename(){return  packagename;}
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -45,7 +43,5 @@ public class appInfomation {
         this.useFrequency = useFrequency;
     }
 
-    public void setAppIcon(int appIcon) {
-        this.appIcon = appIcon;
-    }
+    public void setPackagename(String packagename){this.packagename=packagename;}
 }

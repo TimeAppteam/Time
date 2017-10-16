@@ -98,25 +98,20 @@ public class DetectionService extends AccessibilityService {
              * 如果 与 DetectionService 相同进程，直接比较 foregroundPackageName 的值即可
              * 如果在不同进程，可以利用 Intent 或 bind service 进行通信
              */
-            //foregroundPackageName = event.getPackageName().toString();
+
 
             /*
              * 基于以下还可以做很多事情，比如判断当前界面是否是 Activity，是否系统应用等，
              * 与主题无关就不再展开。
              */
-            // secondName = new ComponentName(event.getPackageName().toString(),
-            //        event.getClassName().toString());
 
-
-            //db.execSQL("create table time"+date+"(name text)");
+            //获得包名。所以，数据库中存储的实际上是包名，显示出来时，再通过包名获得应用名
             secondName=event.getPackageName().toString();
 
             endTime=System.currentTimeMillis();
 
             try {
-                //Cursor c = db.select("appName","useFrequency","useTime").where("appName=?" , firstName).find(appHistory.class);
                 cursor=db.rawQuery("select * from time"+date+" where appName=?",new String[]{firstName});
-
             }catch (Exception e){
                 throw  e;
             }
