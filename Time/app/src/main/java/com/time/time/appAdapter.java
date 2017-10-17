@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -52,8 +53,12 @@ public class appAdapter extends ArrayAdapter {
         }
 
         appname.setText(appinfo.getAppName());
-        apptime.setText(appinfo.getUseTime());//此为秒单位，还要换算成分钟
+        if(Long.valueOf(appinfo.getUseTime())<60)
+            apptime.setText("<1");
+        else
+            apptime.setText(String.valueOf(Long.valueOf(appinfo.getUseTime())/60));//此为秒单位，还要换算成分钟
         appfre.setText(appinfo.getUseFrequency());
         return view;
     }
 }
+

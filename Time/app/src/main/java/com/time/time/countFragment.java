@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,7 +33,7 @@ public class countFragment extends Fragment {
 
 
         List<appInfomation> appinfolist=new ArrayList<>();
-        appinfolist=initAppInfoByFre();
+        appinfolist=initAppInfoByTime();
         appAdapter adapter=new appAdapter(getContext(), R.layout.app_item,appinfolist);
         //注意，必须是view.findViewById
         //没有view. 则错误
@@ -66,6 +68,9 @@ public class countFragment extends Fragment {
 
             }while(cursor.moveToNext());
         }
+        //对list中元素按使用频率排序
+        Collections.sort(appinfolist,new SortByFre());
+
         return appinfolist;
     }
 
@@ -88,12 +93,38 @@ public class countFragment extends Fragment {
                 try {
                     ai = new appInfomation(pm.getApplicationLabel(pm.getApplicationInfo(packagename, PackageManager.GET_META_DATA)).toString()
                             , usetime, usefrequency, packagename);
+
                     appinfolist.add(ai);
                 }catch  (PackageManager.NameNotFoundException e) {
                 }
 
             }while(cursor.moveToNext());
         }
+        //对list中元素按使用时间排序
+        Collections.sort(appinfolist,new SortByTime());
         return appinfolist;
+    }
+}
+
+//两个比较器
+class SortByFre implements Comparator {
+    public int compare(Object obj1,Object obj2){
+        appInfomation appinfo1=(appInfomation) obj1;
+        appInfomation appinfo2=(appInfomation) obj2;
+        if(Integer.valueOf(appinfo1.getUseFrequency())>Integer.valueOf(appinfo2.getUseFrequency()))
+            return -1;
+        else
+            return 1;
+    }
+}
+
+class SortByTime implements Comparator {
+    public int compare(Object obj1,Object obj2){
+        appInfomation appinfo1=(appInfomation) obj1;
+        appInfomation appinfo2=(appInfomation) obj2;
+        if(Long.valueOf(appinfo1.getUseTime())>Long.valueOf(appinfo2.getUseTime()))
+            return -1;
+        else
+            return 1;
     }
 }
