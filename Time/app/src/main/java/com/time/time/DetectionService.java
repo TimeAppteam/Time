@@ -2,6 +2,7 @@ package com.time.time;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -12,9 +13,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
-
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-
 
 import java.text.SimpleDateFormat;
 
@@ -37,9 +37,6 @@ public class DetectionService extends AccessibilityService {
 
     SimpleDateFormat sDateFormat;
     String    date;
-
-    Notification notification;
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -71,20 +68,7 @@ public class DetectionService extends AccessibilityService {
         }
         else{}
         //当用户点通知时，进入mainactivity
-        Intent intent = new Intent(this,MainActivity.class);
-        PendingIntent pi=PendingIntent.getActivity(this,0,intent,0);
-        notification=new NotificationCompat.Builder(this)
-                .setContentTitle("我的一天")
-                .setContentText("解锁"+fre+"次,使用"+time+"分钟")
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.mipmap.ic_launcher))
-                .setContentIntent(pi)
-                .build();
-
-        startForeground(1,notification);
-
+       startForeground(1,getNotification(fre,time));
     }
 
     /**
@@ -98,8 +82,6 @@ public class DetectionService extends AccessibilityService {
              * 如果 与 DetectionService 相同进程，直接比较 foregroundPackageName 的值即可
              * 如果在不同进程，可以利用 Intent 或 bind service 进行通信
              */
-
-
             /*
              * 基于以下还可以做很多事情，比如判断当前界面是否是 Activity，是否系统应用等，
              * 与主题无关就不再展开。
@@ -132,8 +114,7 @@ public class DetectionService extends AccessibilityService {
     }
 
     @Override
-    public void onInterrupt() {
-    }
+    public void onInterrupt() {}
 
     @Override
     protected  void onServiceConnected() {
@@ -179,8 +160,7 @@ public class DetectionService extends AccessibilityService {
             stime=String.valueOf(time);
             db.execSQL("update fre"+date+" set totalUseTime=?",new String[]{stime});
         }
-        else{
-        }
+        else{}
         return stime;
     }
 
@@ -194,19 +174,9 @@ public class DetectionService extends AccessibilityService {
             time=String.valueOf(Long.valueOf(cursor5.getString(cursor5.getColumnIndex("totalUseTime")))/60);
         }
         else{}
-
-        Intent intent = new Intent(this,MainActivity.class);
-        PendingIntent pi=PendingIntent.getActivity(this,0,intent,0);
-        Notification notification=new NotificationCompat.Builder(this)
-                .setContentTitle("我的一天")
-                .setContentText("解锁"+fre+"次,使用"+time+"分钟")
-
-
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.mipmap.ic_launcher))
-                .setContentIntent(pi)
-                .build();
-        startForeground(1,notification);
+//更新通知
+        getNotificationManager().notify(1,getNotification(fre,time));
+        Log.d(TAG, "renewNotific!!!!");
     }
 
     //收到唤醒屏幕，锁屏的广播
@@ -218,12 +188,30 @@ public class DetectionService extends AccessibilityService {
         public void onReceive(Context context, Intent intent) {
             if (SCREEN_ON.equals(intent.getAction())) {
                 writeFre();
+                Log.d(TAG, "renew!!!!!!!");
                 renewNotification();
             }
             else if (SCREEN_OFF.equals(intent.getAction())) {
                 writeTime();
-
             }
         }
+    }
+
+    private NotificationManager getNotificationManager(){
+        return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    }
+
+    private Notification getNotification(String fre,String time){
+        Intent intent = new Intent(this,MainActivity.class);
+        PendingIntent pi=PendingIntent.getActivity(this,0,intent,0);
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ali);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_launcher));
+        builder.setContentIntent(pi);
+        builder.setContentTitle("我的一天");
+        builder.setContentText("解锁"+fre+"次,使用"+time+"分钟");
+
+        return builder.build();
     }
 }
