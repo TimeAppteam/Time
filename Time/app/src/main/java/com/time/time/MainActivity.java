@@ -119,19 +119,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         if (!isAccessibilitySettingsOn(this)) {
             // 引导至辅助功能设置页面
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-
         } else {
             // 执行辅助功能服务相关操作
         }
     }
-
-
-
-
     }
-
-
-
-
-
-

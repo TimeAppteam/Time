@@ -55,6 +55,7 @@ public class countFragment extends Fragment {
         });
         return  view;
     }
+    //更换fragment
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager=getFragmentManager();
         FragmentTransaction transaction=fragmentManager.beginTransaction();
