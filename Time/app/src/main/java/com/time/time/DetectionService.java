@@ -30,7 +30,7 @@ public class DetectionService extends AccessibilityService {
     String firstName="com.android.launcher3";
     String secondName;
     ScreenStatusReceiver mScreenStatusReceiver;
-    Cursor cursor;
+    Cursor cursor,cursor1,cursor2;
 
     MyDatabaseHelper dbHelper;
     SQLiteDatabase db;
@@ -86,30 +86,12 @@ public class DetectionService extends AccessibilityService {
              * 基于以下还可以做很多事情，比如判断当前界面是否是 Activity，是否系统应用等，
              * 与主题无关就不再展开。
              */
-
+            //每次应用切换，调用changeinfo()修改数据库
             //获得包名。所以，数据库中存储的实际上是包名，显示出来时，再通过包名获得应用名
             secondName=event.getPackageName().toString();
-
-            endTime=System.currentTimeMillis();
-
-            try {
-                cursor=db.rawQuery("select * from time"+date+" where appName=?",new String[]{firstName});
-            }catch (Exception e){
-                throw  e;
-            }
-
-            if(!cursor.moveToFirst()){
-                db.execSQL("insert into time"+date+"(appName,useFrequency,useTime) values(?,?,?)",new String[]{firstName,"0","0"});
-            }
-            else if(!firstName.equals(secondName)){
-                String usefrequency=String.valueOf(Integer.valueOf(cursor.getString(cursor.getColumnIndex("useFrequency")))+1);
-                String usetime=String.valueOf(Long.valueOf(cursor.getString(cursor.getColumnIndex("useTime")))+(endTime-startTime)/1000);
-
-                db.execSQL("update time"+date+" set useFrequency=?,useTime=? where appName=?",new String[]{usefrequency,usetime,firstName});
-            }
-            else{}
-            startTime=endTime;
-            firstName=secondName;
+            Log.d(TAG, "onAccessibilityEvent:666");
+            if(!firstName.equals(secondName))
+                changeInfo(0);
         }
     }
 
@@ -129,8 +111,57 @@ public class DetectionService extends AccessibilityService {
         registerReceiver(mScreenStatusReceiver, screenStatusIF);
     }
 
+    //通过a判断更新时手机状态。0，正常状态，因为切换应用导致更新；1，锁屏时导致更新，只更新使用时间，不更新次数；
+    //2，唤醒屏幕时更新，只更新各种状态变量，不更新数据库
+    //这样做是为了防止锁屏时应用未退出产生的时间计入数据库
+    //
+    private int changeInfo(int a){
+        endTime=System.currentTimeMillis();
+        Log.d(TAG, "firstname:"+firstName+"secondname:+"+secondName);
+        try {
+            cursor1=db.rawQuery("select * from time"+date+" where appName=?",new String[]{firstName});
+            cursor2=db.rawQuery("select * from time"+date+" where appName=?",new String[]{secondName});
+        }catch (Exception e){
+            throw  e;
+        }
+        //判断这个应用是否是第一次出现
+        if(!cursor1.moveToFirst()){
+            db.execSQL("insert into time"+date+"(appName,useFrequency,useTime) values(?,?,?)",new String[]{firstName,"1","0"});
+        }
+        if(!cursor2.moveToFirst()){
+            db.execSQL("insert into time"+date+"(appName,useFrequency,useTime) values(?,?,?)",new String[]{secondName,"1","0"});
+        }
+
+        if(a==1){
+            String usefrequency=cursor2.getString(cursor2.getColumnIndex("useFrequency"));
+            String usetime=String.valueOf(Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime")))+(endTime-startTime)/1000);
+
+            db.execSQL("update time"+date+" set useFrequency=?,useTime=? where appName=?",new String[]{usefrequency,usetime,secondName});
+        }
+        else if(a==2){
+            //do nothing
+        }
+        else if(a==0) {
+            if (cursor1.moveToFirst()) {
+                String usefrequency1 = String.valueOf(Integer.valueOf(cursor1.getString(cursor1.getColumnIndex("useFrequency"))));
+                String usetime1 = String.valueOf(Long.valueOf(cursor1.getString(cursor1.getColumnIndex("useTime"))) + (endTime - startTime) / 1000);
+                db.execSQL("update time" + date + " set useFrequency=?,useTime=? where appName=?", new String[]{usefrequency1, usetime1, firstName});
+            }
+            if (cursor2.moveToFirst()) {
+                String usefrequency2 = String.valueOf(Integer.valueOf(cursor2.getString(cursor2.getColumnIndex("useFrequency"))) + 1);
+                String usetime2 = String.valueOf(Long.valueOf(cursor2.getString(cursor2.getColumnIndex("useTime"))));
+                db.execSQL("update time" + date + " set useFrequency=?,useTime=? where appName=?", new String[]{usefrequency2, usetime2, secondName});
+            }
+        }
+        else{}
+        startTime=endTime;
+        firstName=secondName;
+        return 0;
+    }
+
     //唤醒屏幕时，wakeFrequency+1
     private String writeFre(){
+        changeInfo(2);
         Cursor cursor1;
         String wakefrequency="0";
         cursor1=db.rawQuery("select * from fre"+date,null);
@@ -148,6 +179,7 @@ public class DetectionService extends AccessibilityService {
 
     //锁屏时，统计当天使用总时间
     private String writeTime(){
+        changeInfo(1);
         Cursor cursor2;
         long time=0;
         String stime="0";

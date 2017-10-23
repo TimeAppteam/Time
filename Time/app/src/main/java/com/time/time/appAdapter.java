@@ -52,10 +52,10 @@ public class appAdapter extends ArrayAdapter {
 
         appname.setText(appinfo.getAppName());
         try {
-            if ((Long.valueOf(appinfo.getUseTime()) < 60))
-                apptime.setText("<1");
-            else
-                apptime.setText(String.valueOf(Long.valueOf(appinfo.getUseTime()) / 60));//此为秒单位，还要换算成分钟
+           // if ((Long.valueOf(appinfo.getUseTime()) < 60))
+            //apptime.setText("<1");
+            //else
+                apptime.setText(String.valueOf(Long.valueOf(appinfo.getUseTime()) ));//此为秒单位，还要换算成分钟
         }catch (Exception e){
 
         }
