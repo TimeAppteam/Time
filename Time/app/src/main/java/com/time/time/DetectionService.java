@@ -214,4 +214,10 @@ public class DetectionService extends AccessibilityService {
 
         return builder.build();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mScreenStatusReceiver);
+    }
 }

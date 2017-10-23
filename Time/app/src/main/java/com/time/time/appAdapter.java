@@ -1,7 +1,6 @@
 package com.time.time;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -53,10 +51,14 @@ public class appAdapter extends ArrayAdapter {
         }
 
         appname.setText(appinfo.getAppName());
-        if(Long.valueOf(appinfo.getUseTime())<60)
-            apptime.setText("<1");
-        else
-            apptime.setText(String.valueOf(Long.valueOf(appinfo.getUseTime())/60));//此为秒单位，还要换算成分钟
+        try {
+            if ((Long.valueOf(appinfo.getUseTime()) < 60))
+                apptime.setText("<1");
+            else
+                apptime.setText(String.valueOf(Long.valueOf(appinfo.getUseTime()) / 60));//此为秒单位，还要换算成分钟
+        }catch (Exception e){
+
+        }
         appfre.setText(appinfo.getUseFrequency());
         return view;
     }
