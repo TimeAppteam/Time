@@ -5,7 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,8 +20,11 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +39,8 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
     private NoteAdapter noteAdapter;
     private ListView listView;
     private SQLiteDatabase dbread;
+    private static  final int PICTURE = 10086;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,11 +60,16 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
 
         getData();
         //装载ListView
-        ListView listView = (ListView) getActivity().findViewById(R.id.list_view);
+        listView = (ListView) getActivity().findViewById(R.id.list_view);
         listView.setAdapter(noteAdapter);
 
         //RefreshNoteList();
 
+        android.support.v7.widget.Toolbar toolbar1 = getActivity().findViewById(R.id.toolbar1);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar1);
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
+                ((AppCompatActivity) getActivity()).findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle("日记列表");
 
         //设置增加日记按钮
         ImageButton addNote = (ImageButton) getActivity().findViewById(R.id.btn_editnote);
@@ -72,6 +85,19 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
 
             }
         });
+        ImageButton photoButton = (ImageButton) getActivity().findViewById(R.id.btn_editnote_photo);
+        photoButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void  onClick(View view){
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent,PICTURE);
+            }
+        });
+
+
 
 
         RefreshNoteList();
@@ -84,12 +110,41 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == 2) {
-            RefreshNoteList();
-        }
+
+        /*if (resultCode == RESULT_CANCELED) {
+            Toast.makeText(getContext(), "点击取消从相册选择", Toast.LENGTH_LONG).show();
+            return;
+        }*/
+
+        /*try {
+            Uri imageUri = data.getData();
+            Log.e("TAG", imageUri.toString());
+            String image1 = FileUtils.getUriPath(getContext(), imageUri);
+            Log.d("TAG1", image1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        /*String url;
+        Bitmap bitmap ;
+        if (requestCode == PICTURE) {
+            Uri uri = data.getData();
+            url = uri.toString();
+            Log.e("uri", uri.toString());
+            Log.e("url", uri.toString());
+            /*if (url.contains(".jpg") && url.contains(".png")) {
+                Toast.makeText(getContext(), "请选择图片", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            bitmap = HelpUtil.getBitmapByUrl(url);
+            showImageIv.setImageURI(uri);
+
+
+        }*/
     }
+
 
     public void RefreshNoteList() {
         int size = noteList.size();
