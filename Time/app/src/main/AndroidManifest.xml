@@ -45,10 +45,6 @@
             android:name=".windowService"
             android:enabled="true"
             android:exported="true" />
-        <service
-            android:name=".controlService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

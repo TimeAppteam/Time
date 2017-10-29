@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
  */
 
 public class DetectionService extends AccessibilityService {
+    final static String self = "com.time.time";
     final static String TAG = "detectionservice";
     long startTime=System.currentTimeMillis(),endTime;
     static String foregroundPackageName;
@@ -46,7 +47,7 @@ public class DetectionService extends AccessibilityService {
 
     @Override
     public void onCreate() {
-        // Log.d(TAG, "onStartCommand: 666");
+         Log.d(TAG, "onStartCommand: 666");
         super.onCreate();
         dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
         db=dbHelper.getWritableDatabase();
@@ -69,6 +70,8 @@ public class DetectionService extends AccessibilityService {
         else{}
         //当用户点通知时，进入mainactivity
        startForeground(1,getNotification(fre,time));
+
+
     }
 
     /**
@@ -78,20 +81,22 @@ public class DetectionService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            /*
-             * 如果 与 DetectionService 相同进程，直接比较 foregroundPackageName 的值即可
-             * 如果在不同进程，可以利用 Intent 或 bind service 进行通信
-             */
-            /*
-             * 基于以下还可以做很多事情，比如判断当前界面是否是 Activity，是否系统应用等，
-             * 与主题无关就不再展开。
-             */
+            foregroundPackageName = event.getPackageName().toString();
+            Log.i("name",foregroundPackageName);
             //每次应用切换，调用changeinfo()修改数据库
             //获得包名。所以，数据库中存储的实际上是包名，显示出来时，再通过包名获得应用名
             secondName=event.getPackageName().toString();
-            Log.d(TAG, "onAccessibilityEvent:666");
+            //Log.d(TAG, "onAccessibilityEvent:666");
             if(!firstName.equals(secondName))
                 changeInfo(0);
+            /*if(isForegroundPkgViaDetectionService(self)){
+                Log.i(TAG,"true");
+
+            }
+            else {Log.i(TAG,"false");
+                Intent intent = new Intent(getBaseContext(),MainActivity.class);
+                startActivity(intent);}*/
+
         }
     }
 
@@ -251,5 +256,12 @@ public class DetectionService extends AccessibilityService {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mScreenStatusReceiver);
+    }
+
+    public static boolean isForegroundPkgViaDetectionService(String packageName) {
+        Log.i("hhhhh",foregroundPackageName);
+        boolean a = packageName.equals(DetectionService.foregroundPackageName);
+
+        return packageName.equals(DetectionService.foregroundPackageName);
     }
 }

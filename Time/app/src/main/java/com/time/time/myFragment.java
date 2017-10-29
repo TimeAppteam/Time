@@ -63,8 +63,6 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
         listView = (ListView) getActivity().findViewById(R.id.list_view);
         listView.setAdapter(noteAdapter);
 
-        //RefreshNoteList();
-
         android.support.v7.widget.Toolbar toolbar1 = getActivity().findViewById(R.id.toolbar1);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar1);
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
@@ -85,6 +83,7 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
 
             }
         });
+        //设置以照片方式增加日记按钮
         ImageButton photoButton = (ImageButton) getActivity().findViewById(R.id.btn_editnote_photo);
         photoButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -97,10 +96,6 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
             }
         });
 
-
-
-
-        RefreshNoteList();
 
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -215,7 +210,7 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
                 content.indexOf(","));
         Log.d("CONTENT", content1);*/
     }
-
+    //item长点击事件
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
         final int n = i;  //adapter中的位置

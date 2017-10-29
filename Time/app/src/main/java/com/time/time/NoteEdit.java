@@ -68,7 +68,7 @@ public class NoteEdit extends AppCompatActivity {
             }
 
         }
-        //按钮
+        //保存按钮
         ImageButton button_ok = (ImageButton)findViewById(R.id.btn_ok);
         button_ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,9 +83,9 @@ public class NoteEdit extends AppCompatActivity {
                 String dateNum = sdf.format(date);
                 Intent intent1 = getIntent();
                 int id = intent1.getIntExtra("id", 0);
+                //新建日记
                 if (id == 0) {
                     int count = (int) (Math.random() * 10000) + 1;
-
                     Log.d("COUNT=", count + "");
                     if (!content.equals("")) {
                         sql = "insert into "
@@ -99,6 +99,7 @@ public class NoteEdit extends AppCompatActivity {
                         Log.d("LOG", sql);
                         dbread.execSQL(sql);
                     }
+                    //已存在日记，进行修改
                 } else {
                     if (!content.equals("")) {
                         sql = "update "
@@ -121,9 +122,8 @@ public class NoteEdit extends AppCompatActivity {
                 finish();
             }
         });
-        String content=et_content.getText().toString();
-        //setValueAndSelection(et_content,content);
 
+        //取消保存的按钮
         ImageButton button_cancel =(ImageButton)findViewById(R.id.btn_cancel);
         button_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,19 +135,8 @@ public class NoteEdit extends AppCompatActivity {
         });
 
 
-        /*String name = "note";
-        NoteDB DB = new NoteDB(NoteEdit.this, name, null, 1);
-        SQLiteDatabase dread = DB.getReadableDatabase();*/
-
-
-        // Bundle bundle = this.getIntent().getExtras();//得到上一个活动的数据
-        // last_content = bundle.getString("info");
 
 
     }
-    public static void setValueAndSelection(EditText editText,String value){
-        String tempValue = value == null ? "" : value;
-        editText.setText(tempValue);
-        editText.setSelection(tempValue.length());
-    };
+
 }

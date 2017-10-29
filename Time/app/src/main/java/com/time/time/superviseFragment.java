@@ -39,8 +39,12 @@ public class superviseFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+
                 Toast.makeText(getActivity(), "success2", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getActivity(), controlService.class);
+                //启动MyService
+
+                getActivity().startService(intent);
             }
         });
 
@@ -73,7 +77,7 @@ public class superviseFragment extends Fragment {
 
                 Intent intent = new Intent(getActivity(), windowService.class);
                 //启动MyService
-                getActivity().stopService(intent);
+                getActivity().startService(intent);
             }
 
         });
