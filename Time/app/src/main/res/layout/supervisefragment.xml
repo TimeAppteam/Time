@@ -4,15 +4,13 @@
     android:layout_height="match_parent">
 
 
-    <Button
-        android:id="@+id/start"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/swtich"
+        android:layout_marginTop="180dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="start"/>
-    <Button
-        android:id="@+id/remove"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="remove"/>
+        android:layout_gravity="center"
+        android:text="start" />
+
 
 </LinearLayout>

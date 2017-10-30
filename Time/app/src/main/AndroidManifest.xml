@@ -45,6 +45,13 @@
             android:name=".windowService"
             android:enabled="true"
             android:exported="true" />
+        <receiver android:name=".DetectionService$MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.time.time.BROADCAST"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

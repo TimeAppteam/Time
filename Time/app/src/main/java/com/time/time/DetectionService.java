@@ -1,6 +1,7 @@
 package com.time.time;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,9 +24,10 @@ import java.text.SimpleDateFormat;
  * Created by Jerry on 2017/9/22.
  */
 
-public class DetectionService extends AccessibilityService {
+public class DetectionService extends AccessibilityService  {
     final static String self = "com.time.time";
     final static String TAG = "detectionservice";
+    public  static int state;
     long startTime=System.currentTimeMillis(),endTime;
     static String foregroundPackageName;
     String firstName="com.android.launcher3";
@@ -39,15 +41,28 @@ public class DetectionService extends AccessibilityService {
     SimpleDateFormat sDateFormat;
     String    date;
 
+    public static class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            state = intent.getIntExtra("state",-1);
+            Log.i("Recevier1", "接收到:"+state);
+        }
+        }
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        /*int state=intent.getIntExtra("state",-1);
+        String state1=String.valueOf(state);
+        Log.i("state=",state1);
+        Log.d("wwwww","1111");*/
         return Service.START_STICKY; // 根据需要返回不同的语义值
     }
 
     @Override
     public void onCreate() {
          Log.d(TAG, "onStartCommand: 666");
+
         super.onCreate();
         dbHelper=new MyDatabaseHelper(this,"appHistory.db",null,1);
         db=dbHelper.getWritableDatabase();
@@ -82,21 +97,26 @@ public class DetectionService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             foregroundPackageName = event.getPackageName().toString();
-            Log.i("name",foregroundPackageName);
+            Log.i("name", foregroundPackageName);
             //每次应用切换，调用changeinfo()修改数据库
             //获得包名。所以，数据库中存储的实际上是包名，显示出来时，再通过包名获得应用名
-            secondName=event.getPackageName().toString();
+            secondName = event.getPackageName().toString();
             //Log.d(TAG, "onAccessibilityEvent:666");
-            if(!firstName.equals(secondName))
+            if (!firstName.equals(secondName))
                 changeInfo(0);
-            /*if(isForegroundPkgViaDetectionService(self)){
-                Log.i(TAG,"true");
+
+            if (isForegroundPkgViaDetectionService(self)) {
+                Log.i(TAG, "true");
+
+            } else {
+                if (state == 1) {
+                    Log.i(TAG, "false");
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
+
+                }
 
             }
-            else {Log.i(TAG,"false");
-                Intent intent = new Intent(getBaseContext(),MainActivity.class);
-                startActivity(intent);}*/
-
         }
     }
 

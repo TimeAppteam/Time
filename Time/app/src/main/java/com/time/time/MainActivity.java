@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rb_channel.setChecked(true);
         anyMethod();
 
-
     }
 
 
