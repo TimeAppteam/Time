@@ -30,8 +30,9 @@ import android.widget.Button;
  */
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener  {
     private static final String TAG = "MainActivity";
-    private RadioGroup rg_tab_bar;
+    public RadioGroup rg_tab_bar;
     private RadioButton rb_channel;
+    public View div_tab_bar;
 
     //Fragment Object
     private Fragment fg1, fg2, fg3;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         fManager = getSupportFragmentManager();
         rg_tab_bar = (RadioGroup) findViewById(R.id.rg_tab_bar);
         rg_tab_bar.setOnCheckedChangeListener(this);
+        div_tab_bar=findViewById(R.id.div_tab_bar);
         //获取第一个单选按钮，并设置其为选中状态
         rb_channel = (RadioButton) findViewById(R.id.rb_warn);
         rb_channel.setChecked(true);

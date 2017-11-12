@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical" >
+    <LinearLayout
+
+        android:focusable="true"
+
+        android:focusableInTouchMode="true"
+
+        android:layout_width="0px"
+
+        android:layout_height="0px"/>
+
 
 
     <LinearLayout
@@ -33,7 +44,7 @@
                 android:layout_marginTop="10dp"
                 android:background="#FFFFFF"
                 android:gravity="center"
-                android:hint="编辑备忘录"
+                android:hint="编辑日记本"
                 android:textColor="#87CEEB"
                 android:textSize="25sp" />
 
@@ -57,16 +68,26 @@
     </LinearLayout>
 
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical">
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="2dp"
+            android:layout_height="wrap_content"
+
             android:orientation="vertical">
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="20dp"
+                android:src="@drawable/pen"
+                app:backgroundTint="@android:color/white" />
             <EditText
                 android:gravity="top"
                 android:id="@+id/et_content"
@@ -74,7 +95,10 @@
                 android:layout_height="459dp"
                 android:background="#FFFFFF"
                 android:textSize="20sp" />
-        </LinearLayout>
+
+
+        </RelativeLayout>
+
     </ScrollView>
 
 

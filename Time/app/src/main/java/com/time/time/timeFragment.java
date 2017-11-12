@@ -46,7 +46,7 @@ public class timeFragment extends Fragment {
 
     }
 
-    private List<appInfomation> initAppInfoByTime(){
+    public List<appInfomation> initAppInfoByTime(){
         List<appInfomation> appinfolist=new ArrayList<>();
         SimpleDateFormat sDateFormat    =   new SimpleDateFormat("yyyyMMdd");
         String    date    =    sDateFormat.format(new    java.util.Date());

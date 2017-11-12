@@ -69,6 +69,8 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
                 ((AppCompatActivity) getActivity()).findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle("日记列表");
 
+
+
         //设置增加日记按钮
         ImageButton addNote = (ImageButton) getActivity().findViewById(R.id.btn_editnote);
         addNote.setOnClickListener(new View.OnClickListener() {
@@ -101,10 +103,17 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
         listView.setOnItemLongClickListener(this);
         listView.setOnScrollListener(this);
 
+       // initNote();
+
     }
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int saveState = data.getIntExtra("saveState",0);
+        if (saveState == 0){
+            noteAdapter.notifyDataSetChanged();
+            getData();
+        }
 
         /*if (resultCode == RESULT_CANCELED) {
             Toast.makeText(getContext(), "点击取消从相册选择", Toast.LENGTH_LONG).show();
@@ -143,7 +152,8 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
 
     public void RefreshNoteList() {
         int size = noteList.size();
-
+        String strSize=size+"";
+        Log.d("size=",strSize);
         if (size > 0) {
 
             noteAdapter.notifyDataSetChanged();
@@ -153,13 +163,14 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
     }
     //如果正确接收上一个页面返回的数据，刷新界面
 
-    /*public void initNote() {
+    public void initNote() {
         for (int i = 0; i < 20; i++) {
-            String numb= i+"";
-            Note note1 = new Note( R.drawable.ali,numb,"wewewewewe", "2221212asasasasas");
+            int numb= i;
+            String strNumb = numb+"";
+            Note note1 = new Note(R.drawable.ali,numb,strNumb, "2221212asasasasas"," ");
             noteList.add(note1);
         }
-    }*/
+    }
 
     public List<Note> getData() {
         //新建数据库
@@ -202,7 +213,7 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
         Note note = noteList.get(arg2);
         Intent intent = new Intent(getContext(), NoteEdit.class);
         intent.putExtra("id", note.getId());
-        startActivity(intent);
+        startActivityForResult(intent,1);
         //Toast.makeText(MainActivity.this,Note.getTitle(),Toast.LENGTH_LONG).show();
         /*String content = listView.getItemAtPosition(n) + "";
         Log.i("main","position="+content);
@@ -224,7 +235,11 @@ public class myFragment extends Fragment implements AbsListView.OnScrollListener
                 int id = note.getId();
                 String sql_del = "delete from Note  where _id=" + id;
                 dbread.execSQL(sql_del);
-                RefreshNoteList();
+                noteAdapter.notifyDataSetChanged();
+                getData();
+
+
+
 
             }
 

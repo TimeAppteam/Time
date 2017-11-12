@@ -203,7 +203,7 @@ public class DetectionService extends AccessibilityService  {
     }
 
     //锁屏时，统计当天使用总时间
-    private String writeTime(){
+    public String writeTime(){
         changeInfo(1);
         Cursor cursor2;
         long time=0;
