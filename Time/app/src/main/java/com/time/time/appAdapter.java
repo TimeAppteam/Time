@@ -60,6 +60,8 @@ public class appAdapter extends ArrayAdapter {
 
         }
         appfre.setText(appinfo.getUseFrequency());
+        //TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
+        //appfre.setTextSize(50f);
         return view;
     }
 }

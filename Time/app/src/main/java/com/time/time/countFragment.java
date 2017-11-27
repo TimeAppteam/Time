@@ -9,7 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.sql.BatchUpdateException;
 
 /**
  * Created by Jerry on 2017/9/24.
@@ -18,48 +22,36 @@ import android.widget.Spinner;
 /*将显示的内容放在独立的fragment中，便于切换*/
 public class countFragment extends Fragment {
     private static final String TAG = "countFragment";
-    private Spinner spinner;
 
+    //countfragment弄成三层fragment嵌套，最外面countfragment,中间spinner，最里面是数据显示
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        //必须调用replacefragment才能换fragment
         View view = inflater.inflate(R.layout.countfragment, container, false);
-        replaceFragment(new timeFragment());
-        //根据ID获取对象
-        spinner = (Spinner) view.findViewById(R.id.spinner1);
-        //spinner中显示的数据
-        final String[] arr = {
-                "时间",
-                "次数"
-        };
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, arr);
-        spinner.setAdapter(arrayAdapter);
-        //注册事件
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        replaceFragment(new dayFragment());
+
+        Button app=(Button)view.findViewById(R.id.app);
+        Button total=(Button)view.findViewById(R.id.total);
+        app.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                Spinner spinner = (Spinner) parent;
-                if (spinner.getItemAtPosition(position).equals("时间")) {
-                    replaceFragment(new timeFragment());
-                } else {
-                    replaceFragment(new freFragment());
-                }
+            public void onClick(View view) {
+                replaceFragment(new dayFragment());
             }
-
-            //有什么用？？？？？？
+        });
+        total.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-                //Toast.makeText(getContext(), "没有改变的处理", Toast.LENGTH_LONG).show();
+            public void onClick(View view) {
+                replaceFragment(new totalFragment());
             }
         });
         return  view;
     }
+
     //更换fragment
-    private void replaceFragment(Fragment fragment){
+    private   void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager=getFragmentManager();
         FragmentTransaction transaction=fragmentManager.beginTransaction();
-        transaction.replace(R.id.show_layout,fragment);
+        transaction.replace(R.id.middle_fragment,fragment);
         transaction.commit();
     }
 }
